@@ -17,6 +17,7 @@ class KHAFormViewController: UITableViewController, UITextFieldDelegate, UITextV
     
     private var cells = [[KHAFormCell]]()
     private var datePickerIndexPath: NSIndexPath?
+    private var customInlineCellIndexPath: NSIndexPath?
     private var lastIndexPath: NSIndexPath? // For selection form cell
     
     // Form is always grouped tableview
@@ -28,7 +29,12 @@ class KHAFormViewController: UITableViewController, UITextFieldDelegate, UITextV
         super.viewDidLoad()
         
         // init form structure
+        reloadForm()
+    }
+    
+    public func reloadForm() {
         cells = formCellsInForm(self)
+        tableView.reloadData()
     }
     
     /*! Determine form structure by using two-dimensional array.
@@ -44,10 +50,20 @@ class KHAFormViewController: UITableViewController, UITextFieldDelegate, UITextV
         if hasInlineDatePicker() {
             before = (datePickerIndexPath?.row < indexPath.row) && (datePickerIndexPath?.section == indexPath.section)
         }
+        else if hasInlineCustomCell() {
+            before = (customInlineCellIndexPath?.row < indexPath.row && customInlineCellIndexPath?.section == indexPath.section)
+        }
+        
         let row = (before ? indexPath.row - 1 : indexPath.row)
 
         var cell = dequeueReusableFormCellWithType(.DatePicker)
-        if !hasPickerAtIndexPath(indexPath) {
+        if hasCustomCellAtIndexPath(indexPath) {
+            cell = cells[indexPath.section][row-1]
+            if let inlineCell = cell.customInlineCell where customInlineCellIndexPath == indexPath {
+                cell = inlineCell
+            }
+        }
+        else if (!hasPickerAtIndexPath(indexPath) || !hasCustomCellAtIndexPath(indexPath)) && indexPath != datePickerIndexPath {
             cell = cells[indexPath.section][row]
         }
         return cell
@@ -80,7 +96,7 @@ class KHAFormViewController: UITableViewController, UITextFieldDelegate, UITextV
 
     override public func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         
-        if hasInlineDatePickerAtSection(section) {
+        if hasInlineDatePickerAtSection(section) || hasCustomInlineCellAtSection(section) {
             // we have a date picker, so allow for it in the number of rows in this section
             return cells[section].count + 1
         }
@@ -89,14 +105,17 @@ class KHAFormViewController: UITableViewController, UITextFieldDelegate, UITextV
     
     override public func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
         
-        var cell = formCellForIndexPath(indexPath)
+        let cell = formCellForIndexPath(indexPath)
         
         if cell is KHATextFieldFormCell {
-            (cell as! KHATextFieldFormCell).textField.delegate = self
+            cell.textField.delegate = self
         } else if cell is KHATextViewFormCell {
-            (cell as! KHATextViewFormCell).textView.delegate = self
+            cell.textView.delegate = self
         } else if cell is KHADatePickerFormCell {
-            (cell as! KHADatePickerFormCell).datePicker.addTarget(self, action: Selector("didDatePickerValueChanged:"), forControlEvents: UIControlEvents.ValueChanged)
+            let dateCell = formCellForIndexPath(NSIndexPath(forRow: indexPath.row-1, inSection: indexPath.section))
+            cell.datePicker.datePickerMode = dateCell.datePickerMode
+            cell.datePicker.minuteInterval = dateCell.datePicker.minuteInterval
+            cell.datePicker.addTarget(self, action: Selector("didDatePickerValueChanged:"), forControlEvents: UIControlEvents.ValueChanged)
         }
         return cell
     }
@@ -112,12 +131,12 @@ class KHAFormViewController: UITableViewController, UITextFieldDelegate, UITextV
             displayInlineDatePickerForRowAtIndexPath(indexPath)
         } else if cell is KHASelectionFormCell {
             lastIndexPath = indexPath
-            let viewController = KHASelectionFormViewController()
-            viewController.title = cell.textLabel?.text
-            viewController.selections = cell.selections
-            viewController.selectedIndex = cell.selectedIndex
-            viewController.delegate = self
-            navigationController?.pushViewController(viewController, animated: true)
+            let selectionFormViewController = cell.selectionFormViewController
+            selectionFormViewController.delegate = self
+            navigationController?.pushViewController(selectionFormViewController, animated: true)
+        }
+        else if cell.customInlineCell != nil {
+            displayCustomInlineCellForRowAtIndexPath(indexPath)
         }
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
         view.endEditing(true)
@@ -128,7 +147,7 @@ class KHAFormViewController: UITableViewController, UITextFieldDelegate, UITextV
     
     /*! Updates the UIDatePicker's value to match with the date of the cell above it.
     */
-    private func updateDatePicker() {
+    public func updateDatePicker() {
         if let indexPath = datePickerIndexPath {
             if let associatedDatePickerCell = tableView.cellForRowAtIndexPath(indexPath) {
                 let cell = cells[indexPath.section][indexPath.row - 1] as! KHADateFormCell
@@ -144,6 +163,13 @@ class KHAFormViewController: UITableViewController, UITextFieldDelegate, UITextV
         return false
     }
     
+    private func hasCustomInlineCellAtSection(section: Int)-> Bool {
+        if hasInlineCustomCell() {
+            return customInlineCellIndexPath?.section == section
+        }
+        return false
+    }
+    
     /*! Determines if the given indexPath points to a cell that contains the UIDatePicker.
         @param indexPath The indexPath to check if it represents a cell with the UIDatePicker.
     */
@@ -151,10 +177,18 @@ class KHAFormViewController: UITableViewController, UITextFieldDelegate, UITextV
         return hasInlineDatePicker() && (datePickerIndexPath?.row == indexPath.row) && (datePickerIndexPath?.section == indexPath.section)
     }
     
+    private func hasCustomCellAtIndexPath(indexPath: NSIndexPath)->Bool {
+        return hasInlineCustomCell() && (customInlineCellIndexPath?.row == indexPath.row) && (customInlineCellIndexPath?.section == indexPath.section)
+    }
+    
     /*! Determines if the UITableViewController has a UIDatePicker in any of its cells.
     */
     private func hasInlineDatePicker() -> Bool {
         return datePickerIndexPath != nil
+    }
+    
+    private func hasInlineCustomCell()->Bool {
+        return customInlineCellIndexPath != nil
     }
     
     /*! Adds or removes a UIDatePicker cell below the given indexPath.
@@ -180,7 +214,7 @@ class KHAFormViewController: UITableViewController, UITextFieldDelegate, UITextV
             before = (datePickerIndexPath?.row < indexPath.row) && (datePickerIndexPath?.section == indexPath.section)
         }
         
-        var sameCellClicked = ((datePickerIndexPath?.row == indexPath.row + 1) && (datePickerIndexPath?.section == indexPath.section))
+        let sameCellClicked = ((datePickerIndexPath?.row == indexPath.row + 1) && (datePickerIndexPath?.section == indexPath.section))
         
         // remove any date picker cell if it exists
         if hasInlineDatePicker() {
@@ -203,6 +237,34 @@ class KHAFormViewController: UITableViewController, UITextFieldDelegate, UITextV
         
         // inform our date picker of the current date to match the current cell
         updateDatePicker()
+    }
+    
+    private func displayCustomInlineCellForRowAtIndexPath(indexPath: NSIndexPath) {
+        tableView.beginUpdates()
+        var before = false
+        if hasInlineCustomCell() {
+            before = (customInlineCellIndexPath?.row < indexPath.row && customInlineCellIndexPath?.section == indexPath.section)
+        }
+        
+        let sameCellClicked = ((customInlineCellIndexPath?.row == indexPath.row + 1 ) && customInlineCellIndexPath?.section == indexPath.section)
+        
+        // remove any other custom cell if it exists
+        if let indexPath = customInlineCellIndexPath where hasInlineCustomCell() {
+            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: .Fade)
+            customInlineCellIndexPath = nil
+        }
+        
+        if !sameCellClicked {
+            // hide the old custom cell and display the new one
+            let rowToReveal = before ? indexPath.row-1 : indexPath.row
+            let indexPathToReveal = NSIndexPath(forRow: rowToReveal, inSection: indexPath.section)
+            tableView.insertRowsAtIndexPaths([NSIndexPath(forRow: indexPathToReveal.row+1, inSection: indexPathToReveal.section)], withRowAnimation: .Fade)
+            customInlineCellIndexPath = NSIndexPath(forRow: indexPathToReveal.row+1, inSection: indexPathToReveal.section)
+        }
+        
+        tableView.deselectRowAtIndexPath(indexPath, animated: true)
+        
+        tableView.endUpdates()
     }
     
     private func removeAnyDatePickerCell() {
@@ -236,14 +298,14 @@ class KHAFormViewController: UITableViewController, UITextFieldDelegate, UITextV
             targetedCellIndexPath = NSIndexPath(forRow: datePickerIndexPath!.row - 1, inSection: datePickerIndexPath!.section)
         } else {
             // external date picker: update the current "selected" cell's date
-            if let selectedIndexPath = tableView.indexPathForSelectedRow() {
+            if let selectedIndexPath = tableView.indexPathForSelectedRow {
                 targetedCellIndexPath = selectedIndexPath
             }
         }
         
         // update the cell's date string
         if let selectedIndexPath = targetedCellIndexPath {
-            var cell = tableView.cellForRowAtIndexPath(targetedCellIndexPath!) as! KHADateFormCell
+            let cell = tableView.cellForRowAtIndexPath(selectedIndexPath) as! KHADateFormCell
             let targetedDatePicker = sender
             cell.date = targetedDatePicker.date
         }
@@ -262,6 +324,22 @@ class KHAFormViewController: UITableViewController, UITextFieldDelegate, UITextV
     
     func selectionFormDidChangeSelectedIndex(selectionForm: KHASelectionFormViewController) {
         let cell = tableView.cellForRowAtIndexPath(lastIndexPath!) as! KHASelectionFormCell
-        cell.selectedIndex = selectionForm.selectedIndex
+        cell.detailTextLabel?.text = selectionForm.selections[selectionForm.selectedIndex]
+    }
+    
+    func multipleSelectionFormDidChangeSelectedIndex(selectionForm: KHAMultipleSelectionFormViewController) {
+        let cell = tableView.cellForRowAtIndexPath(lastIndexPath!) as! KHASelectionFormCell
+        
+        if(selectionForm.selectedIndices.count == 0) {
+            cell.detailTextLabel?.text = "None"
+            return
+        }
+        
+        if(selectionForm.selectedIndices.count == 1) {
+            cell.detailTextLabel?.text = selectionForm.selections[selectionForm.selectedIndices[0]]
+            return
+        }
+        
+        cell.detailTextLabel?.text = String(selectionForm.selectedIndices.count) + "day(s)"
     }
 }

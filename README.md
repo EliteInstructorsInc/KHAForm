@@ -7,16 +7,16 @@
 
 ###CocoaPods
 ~~~
-platform :ios, '8.0'
+platform :ios, '9.0'
 use_frameworks!
 
 pod 'KHAForm'
 ~~~
 
 ###Requirements
-* iOS 8.0+
-* Xcode 6.3+
-* Swift 1.2
+* iOS 9.0
+* Xcode 7.0
+* Swift 2.0
 
 ###Interface
 <img alt="demo" src="https://raw.githubusercontent.com/wiki/KoheiHayakawa/KHAForm/images/demo.gif" width="200"/>
@@ -31,9 +31,9 @@ import UIKit
 import KHAForm // Import KHAForm
 
 
-// Inherit KHAFormViewController and adopt KHAFormViewDataSource
+// Inherit KHAFormViewController
 
-class ExampleFormViewController: KHAFormViewController, KHAFormViewDataSource {
+class ExampleFormViewController: KHAFormViewController {
     
     // Override a method to determine form structure
     override func formCellsInForm(form: KHAFormViewController) -> [[KHAFormCell]] {
@@ -64,15 +64,23 @@ class ExampleFormViewController: KHAFormViewController, KHAFormViewDataSource {
         cell4.date = NSDate()
 
         cell5.textLabel?.text = "End"
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateStyle = .LongStyle
+        dateFormatter.timeStyle = .NoStyle
+        cell5.dateFormatter = dateFormatter // We can change date format
+        cell5.datePickerMode = .Date        // and picker mode
         cell5.date = NSDate()
         
         cell6.textLabel?.text = "Fruits"
-        cell6.selections = ["None", "Apple", "Grape", "Orange"] // We must init selection list
-        cell6.selectedIndex = 1 // We must assign initial selected value
-        
-        cell7.textLabel?.text = "iPhone"
-        cell7.selections = ["iPhone 6", "iPhone 6 Plus", "iPhone 5s"]
-        cell7.selectedIndex = 0
+        let fruitsSelectionFormViewController = KHASelectionFormViewController()
+        fruitsSelectionFormViewController.title = "Fruits"
+        fruitsSelectionFormViewController.selections = ["None", "Apple", "Grape", "Orange"] // We must init selection list
+        fruitsSelectionFormViewController.selectedIndex = 1 // We must assign initial selected value
+        cell6.selectionFormViewController = fruitsSelectionFormViewController
+    
+        cell7.textLabel?.text = "Phone"
+        let phoneSelectionFormViewController = PhoneSelectionFormViewController() // We can use custom controller
+        cell7.selectionFormViewController = phoneSelectionFormViewController
         
         cell8.textView.placeholder = "placeholder" // We can add placeholder on textview
         
@@ -92,35 +100,64 @@ class ExampleFormViewController: KHAFormViewController, KHAFormViewDataSource {
     }
     
     func didPressedDeleteButton(sender: UIButton) {
-        println("delete")
+        print("delete")
         
         // We can access to the first cell contains text field...
         let cell1 = formCellForIndexPath(NSIndexPath(forRow: 0, inSection: 0))
-        println(cell1.textField.text)
+        print(cell1.textField.text)
         
         // ...and second cell contains segmented controller, etc...
         let cell2 = formCellForIndexPath(NSIndexPath(forRow: 1, inSection: 0))
-        println(cell2.segmentedControl.selectedSegmentIndex)
+        print(cell2.segmentedControl.selectedSegmentIndex)
         
         let cell3 = formCellForIndexPath(NSIndexPath(forRow: 2, inSection: 0))
-        println(cell3.sswitch.on)
+        print(cell3.sswitch.on)
         
         let cell4 = formCellForIndexPath(NSIndexPath(forRow: 0, inSection: 1))
-        println(cell4.date)
+        print(cell4.date)
         
         let cell6 = formCellForIndexPath(NSIndexPath(forRow: 0, inSection: 2))
-        println(cell6.selections[cell6.selectedIndex])
+        print(cell6.selections[cell6.selectedIndex])
     }
     
     func didPressedCancelButton(sender: UIButton) {
-        println("cancel")
+        print("cancel")
     }
 
 }
 ```
 
+If we use custom selection form view controller, this is an example code below.
+```swift
+import UIKit
+import KHAForm
+
+// Inherit KHASelectionFormViewController
+
+class PhoneSelectionFormViewController: KHASelectionFormViewController {
+    
+    override func viewDidLoad() {
+        super.viewDidLoad()
+        title = "Phone"
+    }
+    
+    override func didReceiveMemoryWarning() {
+        super.didReceiveMemoryWarning()
+        // Dispose of any resources that can be recreated.
+    }
+    
+    override func selectionsForSelectionForm(selectionForm: KHASelectionFormViewController) -> [String] {
+        return ["iPhone 6", "iPhone 6 Plus", "iPhone 5s"]
+    }
+    
+    override func selectedIndexForSelectionForm(selectionForm: KHASelectionFormViewController) -> Int {
+        return 0
+    }
+}
+```
+
 ###Contact
-[@kohei_hayakawa](https://twitter.com/kohei_hayakawa)
+[@pettarou2](https://twitter.com/pettarou2)
 
 ###License
 KHAForm is released under the MIT license. See LICENSE for details.

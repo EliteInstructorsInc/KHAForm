@@ -16,7 +16,16 @@ class KHADateFormCell: KHAFormCell {
     
     override var date: NSDate {
         willSet {
-            detailTextLabel?.text = dateFotmatter.stringFromDate(newValue)
+            detailTextLabel?.text = dateFormatter.stringFromDate(newValue)
+        }
+        didSet {
+            dateDelegate?.dateDidChange(date)
+        }
+    }
+    
+    override var dateFormatter: NSDateFormatter {
+        willSet {
+            detailTextLabel?.text = newValue.stringFromDate(date)
         }
     }
     
@@ -24,11 +33,14 @@ class KHADateFormCell: KHAFormCell {
         super.init(style: .Value1, reuseIdentifier: reuseIdentifier)
         textLabel?.text = "Label"
         detailTextLabel?.text = "Date"
-        dateFotmatter.dateStyle = .ShortStyle
-        dateFotmatter.timeStyle = .ShortStyle
+        dateFormatter.dateStyle = .ShortStyle
+        dateFormatter.timeStyle = .ShortStyle
+        datePickerMode = .DateAndTime
     }
 
-    required init(coder aDecoder: NSCoder) {
+    required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
+    
+    
 }

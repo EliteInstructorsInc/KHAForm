@@ -10,9 +10,9 @@ import UIKit
 import KHAForm // Import KHAForm
 
 
-// Inherit KHAFormViewController and adopt KHAFormViewDataSource
+// Inherit KHAFormViewController
 
-class ExampleFormViewController: KHAFormViewController, KHAFormViewDataSource {
+class ExampleFormViewController: KHAFormViewController {
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -38,6 +38,7 @@ class ExampleFormViewController: KHAFormViewController, KHAFormViewDataSource {
         let cell9 = dequeueReusableFormCellWithType(.Button)
         let cell10 = dequeueReusableFormCellWithType(.Button)
         let cell11 = KHAFormCell()   // we can use custom cell
+        let cell12 = KHAFormCell()
         
         // settings for each cell
         cell1.textField.text = "Title"
@@ -52,15 +53,23 @@ class ExampleFormViewController: KHAFormViewController, KHAFormViewDataSource {
         cell4.date = NSDate()
 
         cell5.textLabel?.text = "End"
+        let dateFormatter = NSDateFormatter()
+        dateFormatter.dateStyle = .LongStyle
+        dateFormatter.timeStyle = .NoStyle
+        cell5.dateFormatter = dateFormatter // We can change date format
+        cell5.datePickerMode = .Date        // and picker mode
         cell5.date = NSDate()
         
         cell6.textLabel?.text = "Fruits"
-        cell6.selections = ["None", "Apple", "Grape", "Orange"] // We must init selection list
-        cell6.selectedIndex = 1 // We must assign initial selected value
-        
-        cell7.textLabel?.text = "iPhone"
-        cell7.selections = ["iPhone 6", "iPhone 6 Plus", "iPhone 5s"]
-        cell7.selectedIndex = 0
+        let fruitsSelectionFormViewController = KHASelectionFormViewController()
+        fruitsSelectionFormViewController.title = "Fruits"
+        fruitsSelectionFormViewController.selections = ["None", "Apple", "Grape", "Orange"] // We must init selection list
+        fruitsSelectionFormViewController.selectedIndex = 1 // We must assign initial selected value
+        cell6.selectionFormViewController = fruitsSelectionFormViewController
+    
+        cell7.textLabel?.text = "Phone"
+        let phoneSelectionFormViewController = PhoneSelectionFormViewController() // We can use custom controller
+        cell7.selectionFormViewController = phoneSelectionFormViewController
         
         cell8.textView.placeholder = "placeholder" // We can add placeholder on textview
         
@@ -74,34 +83,37 @@ class ExampleFormViewController: KHAFormViewController, KHAFormViewDataSource {
         
         cell11.textLabel?.text = "custom cell"
         
+        cell12.textLabel?.text = "Open"
+        cell12.customInlineCell = cell1
+        
         // Form structure is determined by using two-dimensional array.
         // First index determines section and second index determines row.
-        return [[cell1, cell2, cell3], [cell4, cell5], [cell6, cell7], [cell8], [cell9, cell10], [cell11]]
+        return [[cell1, cell2, cell3], [cell4, cell5], [cell6, cell7], [cell8], [cell9, cell10], [cell11], [cell12]]
     }
     
     func didPressedDeleteButton(sender: UIButton) {
-        println("delete")
+        print("delete")
         
         // We can access to the first cell contains text field...
         let cell1 = formCellForIndexPath(NSIndexPath(forRow: 0, inSection: 0))
-        println(cell1.textField.text)
+        print(cell1.textField.text)
         
         // ...and second cell contains segmented controller, etc...
         let cell2 = formCellForIndexPath(NSIndexPath(forRow: 1, inSection: 0))
-        println(cell2.segmentedControl.selectedSegmentIndex)
+        print(cell2.segmentedControl.selectedSegmentIndex)
         
         let cell3 = formCellForIndexPath(NSIndexPath(forRow: 2, inSection: 0))
-        println(cell3.sswitch.on)
+        print(cell3.sswitch.on)
         
         let cell4 = formCellForIndexPath(NSIndexPath(forRow: 0, inSection: 1))
-        println(cell4.date)
+        print(cell4.date)
         
         let cell6 = formCellForIndexPath(NSIndexPath(forRow: 0, inSection: 2))
-        println(cell6.selections[cell6.selectedIndex])
+        print(cell6.selectionFormViewController.selections[cell6.selectionFormViewController.selectedIndex])
     }
     
     func didPressedCancelButton(sender: UIButton) {
-        println("cancel")
+        print("cancel")
     }
 
 }

@@ -16,7 +16,7 @@ public class KHAMultipleSelectionFormViewController: KHASelectionFormViewControl
         
         let cell = tableView.cellForRowAtIndexPath(indexPath)
         
-        if(cell?.accessoryType == .None) {
+        if(cell?.accessoryType.rawValue == 0) {
             cell?.accessoryType = .Checkmark
             selectedIndices.append(indexPath.row)
         } else if(cell?.accessoryType == .Checkmark) {

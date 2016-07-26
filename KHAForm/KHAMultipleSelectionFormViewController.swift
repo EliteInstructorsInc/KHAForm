@@ -14,16 +14,17 @@ public class KHAMultipleSelectionFormViewController: KHASelectionFormViewControl
     
     override public func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
         
-        // Remove checkmark from old selected cell
-        let oldSelectedCell = tableView.cellForRowAtIndexPath(NSIndexPath(forRow: selectedIndex, inSection: 0))
-        oldSelectedCell?.accessoryType = .None
-        
-        // Add checkmark to new selected cell
         let cell = tableView.cellForRowAtIndexPath(indexPath)
-        cell?.accessoryType = .Checkmark
-        selectedIndex = indexPath.row
-        delegate?.selectionFormDidChangeSelectedIndex(self)
         
+        if(cell?.accessoryType == .None) {
+            cell?.accessoryType = .Checkmark
+            selectedIndices.append(indexPath.row)
+        } else if(cell?.accessoryType == .Checkmark) {
+            cell?.accessoryType = .None
+            selectedIndices = selectedIndices.filter({ $0 != indexPath.row })
+        }
+
+        delegate?.multipleSelectionFormDidChangeSelectedIndex(self)
         tableView.deselectRowAtIndexPath(indexPath, animated: true)
     }
 }

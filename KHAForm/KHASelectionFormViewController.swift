@@ -10,6 +10,7 @@ import UIKit
 
 protocol KHASelectionFormViewDelegate: class {
     func selectionFormDidChangeSelectedIndex(selectionForm: KHASelectionFormViewController)
+    func multipleSelectionFormDidChangeSelectedIndex(selectionForm: KHAMultipleSelectionFormViewController)
 }
 
 public protocol KHASelectionFormViewDataSource {

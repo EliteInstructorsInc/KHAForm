@@ -326,4 +326,9 @@ class KHAFormViewController: UITableViewController, UITextFieldDelegate, UITextV
         let cell = tableView.cellForRowAtIndexPath(lastIndexPath!) as! KHASelectionFormCell
         cell.detailTextLabel?.text = selectionForm.selections[selectionForm.selectedIndex]
     }
+    
+    func multipleSelectionFormDidChangeSelectedIndex(selectionForm: KHAMultipleSelectionFormViewController) {
+        let cell = tableView.cellForRowAtIndexPath(lastIndexPath!) as! KHASelectionFormCell
+        cell.detailTextLabel?.text = String(selectionForm.selectedIndices.count) + "day(s)"
+    }
 }

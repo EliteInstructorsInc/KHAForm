@@ -15,7 +15,6 @@
 		217FFAE60DDC710976CDCECE79C86D3F /* Pods-umbrella.h in Headers */ = {isa = PBXBuildFile; fileRef = CF258469C4D60DA197CD137BE1EEB209 /* Pods-umbrella.h */; settings = {ATTRIBUTES = (Public, ); }; };
 		22E97CDD1D46D62B00306F23 /* KHAMultipleSelectionFormViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22E97CDC1D46D62B00306F23 /* KHAMultipleSelectionFormViewController.swift */; };
 		22EC87681D49293F00580E32 /* KHADayOfWeekCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22EC87671D49293F00580E32 /* KHADayOfWeekCell.swift */; };
-		22EC876A1D492C2400580E32 /* KHADateRepeatCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22EC87691D492C2400580E32 /* KHADateRepeatCell.swift */; };
 		22EC876C1D492ED200580E32 /* KHADateRepeatViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 22EC876B1D492ED200580E32 /* KHADateRepeatViewController.swift */; };
 		2746D723E9B28D69775EFD838BBC2901 /* Foundation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 103782424C3C2C7EB51CD460750BC496 /* Foundation.framework */; };
 		345B46B58F093C170F2BD2CA0D2E22C9 /* KHASwitchFormCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = DB1FF65F930B9418974815BB41C3111C /* KHASwitchFormCell.swift */; };
@@ -49,7 +48,6 @@
 		1E7891CB7869361D4A782A566AD8AA00 /* KHASegmentedControlFormCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KHASegmentedControlFormCell.swift; sourceTree = "<group>"; };
 		22E97CDC1D46D62B00306F23 /* KHAMultipleSelectionFormViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KHAMultipleSelectionFormViewController.swift; sourceTree = "<group>"; };
 		22EC87671D49293F00580E32 /* KHADayOfWeekCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KHADayOfWeekCell.swift; sourceTree = "<group>"; };
-		22EC87691D492C2400580E32 /* KHADateRepeatCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KHADateRepeatCell.swift; sourceTree = "<group>"; };
 		22EC876B1D492ED200580E32 /* KHADateRepeatViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = KHADateRepeatViewController.swift; sourceTree = "<group>"; };
 		33832ECFD2F273DA532D7E5651B5ECC8 /* Pods.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		4A79C59421FB2927BF4D282FC4CCE1AF /* KHADatePickerFormCell.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; path = KHADatePickerFormCell.swift; sourceTree = "<group>"; };
@@ -115,7 +113,6 @@
 				F7032210158395DC307BE3B454CC79C4 /* KHATextViewFormCell.swift */,
 				22E97CDC1D46D62B00306F23 /* KHAMultipleSelectionFormViewController.swift */,
 				22EC87671D49293F00580E32 /* KHADayOfWeekCell.swift */,
-				22EC87691D492C2400580E32 /* KHADateRepeatCell.swift */,
 				22EC876B1D492ED200580E32 /* KHADateRepeatViewController.swift */,
 			);
 			path = KHAForm;
@@ -308,7 +305,6 @@
 				93C3FD129391E811A85B95CFDC648528 /* KHAButtonFormCell.swift in Sources */,
 				AF7DAE7E7AE19ED7746E6808AFD8F699 /* KHADateFormCell.swift in Sources */,
 				06A79378239D650E7699FEF237885669 /* KHADatePickerFormCell.swift in Sources */,
-				22EC876A1D492C2400580E32 /* KHADateRepeatCell.swift in Sources */,
 				C5A0484847A83C291F4505E3A068EF99 /* KHAForm-dummy.m in Sources */,
 				043966C8EC8FB457AA1A4104382F35ED /* KHAFormCell.swift in Sources */,
 				1D66EAFAFE7D26C9D6C8804A376916D7 /* KHAFormViewController.swift in Sources */,

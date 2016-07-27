@@ -18,6 +18,8 @@ public enum KHAFormCellType {
     case TextView
     case Button
     case Selection
+    case Repeat
+    case DayOfWeek
     
     func cellID() -> String {
         switch self {
@@ -29,6 +31,8 @@ public enum KHAFormCellType {
         case .TextView:         return KHATextViewFormCell.cellID
         case .Button:           return KHAButtonFormCell.cellID
         case .Selection:        return KHASelectionFormCell.cellID
+        case .Repeat:           return KHADateRepeatCell.cellID
+        case .DayOfWeek:        return KHADayOfWeekCell.cellID
         }
     }
     
@@ -42,6 +46,8 @@ public enum KHAFormCellType {
         case .TextView:         return KHATextViewFormCell.self
         case .Button:           return KHAButtonFormCell.self
         case .Selection:        return KHASelectionFormCell.self
+        case .Repeat:           return KHADateRepeatCell.self
+        case .DayOfWeek:        return KHADayOfWeekCell.self
         }
     }
 }
@@ -109,6 +115,10 @@ public class KHAFormCell: UITableViewCell {
             return KHAButtonFormCell()
         case .Selection:
             return KHASelectionFormCell()
+        case .Repeat:
+            return KHADateRepeatCell()
+        case .DayOfWeek:
+            return KHADayOfWeekCell()
         }
     }
 }

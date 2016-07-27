@@ -356,7 +356,7 @@ class KHAFormViewController: UITableViewController, UITextFieldDelegate, UITextV
         }
         
         //Selected index is not none
-        if(selectionForm.selectedIndex > 0) {
+        if(selectionForm.selectedIndex > 0 && customInlineCellIndexPath == nil) {
             displayCustomInlineCellForRowAtIndexPath(lastIndexPath!)
         }
     }

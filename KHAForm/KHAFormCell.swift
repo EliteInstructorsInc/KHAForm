@@ -109,5 +109,6 @@ public class KHAFormCell: UITableViewCell {
             return KHAButtonFormCell()
         case .Selection:
             return KHASelectionFormCell()
+        }
     }
 }

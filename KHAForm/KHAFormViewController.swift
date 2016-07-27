@@ -351,8 +351,8 @@ class KHAFormViewController: UITableViewController, UITextFieldDelegate, UITextV
         let cell = tableView.cellForRowAtIndexPath(lastIndexPath!) as! KHASelectionFormCell
         cell.detailTextLabel?.text = selectionForm.selections[selectionForm.selectedIndex]
         
-        if(selectionForm.selectedIndex == 0) {
-            //should remove day of week picker
+        if(selectionForm.selectedIndex == 0 && customInlineCellIndexPath != nil) {
+            displayCustomInlineCellForRowAtIndexPath(lastIndexPath!)
         }
         
         //Selected index is not none
